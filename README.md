@@ -44,6 +44,55 @@
   * pasos:
      - Levantar Proyecto: Botón derecho del mouse sobre el proyecto -> Run as -> Spring Boot App
   
-  ** Si el proyecto no presenta errores de librerias, levantara sin problema
+       ** Si el proyecto no presenta errores de librerias, levantara sin problema
 
-     
+# Caracteristica Generales:
+  * JWT: Librerias para la seguidad. se trabajo bajo token.
+  * Hibernate: Librerias para interactuar con la base de datos. (Interfaz ocupada CrudRepository)
+  * BD: Se ocupo una base de datos H2 Database.
+
+# Url del Proyecto:
+  * Logear: http://{domino o localhost}:8080/private/user/login  Método: POST
+    - JSON de Entrada: Request
+      {
+       "name": "Juan Daniel",
+       "email": "juan@daniel.com",
+       "password": "JdmQ1481#",
+       "phones": [
+               {
+               "number": "1234567",
+               "citycode": "1",
+               "contrycode": "57"
+               }
+           ]
+       }     
+       
+    - JSON de Respuesta: Response
+       {
+           "data": {
+               "id": 1,
+               "created": "23-08-2020 02:58 AM",
+               "modified": "23-08-2020 02:58 AM",
+               "lastLogin": "23-08-2020 02:58 AM",
+               "token": "Bearer eyJhbGciOiJIUzUxMiJ9.
+               eyJqdGkiOiJzb2Z0dGVrSldUIiwic3ViIjoiMSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1OTgxNjU5MzcsImV4cCI6MTU5ODE2NjUzN30.
+               faILbx3cic1pGXzsYIv86OHqN5m0KN-Vp5TkQ-Jk2CD497fLcjdAk-Txof_jqUoAZ34zwnbK6XqF7tNi643laQ",
+               "active": true
+           }
+       }          
+       
+  * Consultar Usuario: http://{domino o localhost}:8080/private/user/{id del usuario}  Método: GET
+    - JSON de Respuesta: Response
+       {
+           "data": {
+               "id": 1,
+               "created": "23-08-2020 02:58 AM",
+               "modified": "23-08-2020 02:58 AM",
+               "lastLogin": "23-08-2020 02:58 AM",
+               "token": "Bearer eyJhbGciOiJIUzUxMiJ9.
+               eyJqdGkiOiJzb2Z0dGVrSldUIiwic3ViIjoiMSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1OTgxNjU5MzcsImV4cCI6MTU5ODE2NjUzN30.
+               faILbx3cic1pGXzsYIv86OHqN5m0KN-Vp5TkQ-Jk2CD497fLcjdAk-Txof_jqUoAZ34zwnbK6XqF7tNi643laQ",
+               "active": true
+           }
+       }      
+
