@@ -128,5 +128,6 @@
   * Se implementa Hibernate con la interfaces CrudRepository
   * Se trabajo bajo el concepto cuenta con bajo acoplamiento y alta cohesión. (DI = Inyección de Dependecia)
   * Trabaja con una base de dato H2 Database.
+  * Manejo de Excepciones
     
  # Fin
