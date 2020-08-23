@@ -94,5 +94,33 @@
                faILbx3cic1pGXzsYIv86OHqN5m0KN-Vp5TkQ-Jk2CD497fLcjdAk-Txof_jqUoAZ34zwnbK6XqF7tNi643laQ",
                "active": true
            }
-       }      
-
+       }   
+       
+       
+  * Actualizar: http://{domino o localhost}:8080/private/user/update/{id del usuario}  Método: PUT
+    - JSON de Entrada: Request
+      {
+       "name": "Juan Daniel",
+       "email": "juan@daniel.com",
+       "password": "JdmQ1481#",
+       "phones": [
+               {
+               "number": "1234567",
+               "citycode": "1",
+               "contrycode": "57"
+               }
+           ]
+       }     
+       
+    - JSON de Respuesta: Response
+      {
+          "data": "Se modificaron los datos del usuario correctamente."
+      }
+ 
+   * Logout: http://{domino o localhost}:8080/private/user/logout/{id del usuario}  Método: PUT
+    - JSON de Respuesta: Response
+     {
+         "data": "cierre de sesiòn."
+     }
+      
+      
