@@ -16,7 +16,7 @@
      - posicionar se en la carpeta donde bajara el proyecto.
      - clonar proyecto => git clone https://github.com/jdanielmq/Proyecto-GlobalLogic.git "nombre propio"
      
-    * Abrir el IDE:
+  * Abrir el IDE:
      - Abrir un worksapce, lo ideal dejar el proyecto dentro de la carperta workspace.
      - Importar el proyecto: Import -> General -> Proyects From Folder o Archive -> ir a la carpeta donde se bajo el proyecto.
      - limpiar el proyecto: Proyect -> Clean...
