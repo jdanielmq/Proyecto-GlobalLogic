@@ -3,6 +3,8 @@ package com.bci.pruebatecnica.services.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import com.bci.pruebatecnica.utils.Validador;
 
 @Service
 public class UsuarioServiceImpl implements IUsuarioService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UsuarioServiceImpl.class);
 	
 	@Autowired
 	private IUserDataAcces iUserDataAcces;
@@ -114,6 +118,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 				throw new Exception("Usuario con el id :"+ id + " no existe en las base de datos");
 			
 		}catch (DataAccessException e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - getUserById] ", id);
 			throw e;
 		}catch (Exception e) {
 			throw e;
@@ -147,6 +152,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			
 			return idUser !=0 ? true : false;
 		}catch (DataAccessException e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - updateUser] ", reqUser, id);
 			throw e;
 		}catch (Exception e) {
 			throw e;
@@ -167,6 +173,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			userDto.setActive(false);
 			return iUserDataAcces.saveUser(userDto) !=0 ? true : false;
 		}catch (DataAccessException e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - logOutUser] ", id);
 			throw e;
 		}catch (Exception e) {
 			throw e;

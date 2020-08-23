@@ -1,6 +1,8 @@
 package com.bci.pruebatecnica.data.dataAccess.impl;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ import com.bci.pruebatecnica.data.repository.IUsuarioDao;
 @Component
 public class UserDataAcces implements IUserDataAcces {
 	
+	private static final Logger logger = LoggerFactory.getLogger(UserDataAcces.class);
+	
 	@Autowired
 	private IUsuarioDao iUsuarioDao;
 
@@ -27,6 +31,7 @@ public class UserDataAcces implements IUserDataAcces {
 			iUsuarioDao.save(user);
 			return user.getIdUser();
 		}catch (DataAccessException e) {
+			logger.error("ERROR - [UserDataAccess -> Metodo - saveUser] ", userDto);
 			throw e;
 		}
 	}
@@ -42,6 +47,7 @@ public class UserDataAcces implements IUserDataAcces {
 			return (UserDto)MapperUtils.convertToDto(user, new UserDto());
 
 		}catch (DataAccessException e) {
+			logger.error("ERROR - [UserDataAccess -> Metodo - findByEmail] ", email);
 			throw e;
 		}
 	}
@@ -56,6 +62,7 @@ public class UserDataAcces implements IUserDataAcces {
 			
 			return (UserDto)MapperUtils.convertToDto(user, new UserDto());
 		}catch (DataAccessException e) {
+			logger.error("ERROR - [UserDataAccess -> Metodo - findById] ", id);
 			throw e;
 		}
 	}
