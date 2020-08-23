@@ -38,7 +38,7 @@ public class UserDataAcces implements IUserDataAcces {
 			iUsuarioDao.save(user);
 			return user.getIdUser();
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [UserDataAccess -> Metodo - saveUser] ", userDto);
+			logger.error("ERROR - [UserDataAccess -> Metodo - saveUser] ", e);
 			throw e;
 		}
 	}
@@ -63,7 +63,7 @@ public class UserDataAcces implements IUserDataAcces {
 			return (UserDto)MapperUtils.convertToDto(user, new UserDto());
 
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [UserDataAccess -> Metodo - findByEmail] ", email);
+			logger.error("ERROR - [UserDataAccess -> Metodo - findByEmail] ", e);
 			throw e;
 		}
 	}
@@ -87,7 +87,7 @@ public class UserDataAcces implements IUserDataAcces {
 			
 			return (UserDto)MapperUtils.convertToDto(user, new UserDto());
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [UserDataAccess -> Metodo - findById] ", id);
+			logger.error("ERROR - [UserDataAccess -> Metodo - findById] ", e);
 			throw e;
 		}
 	}

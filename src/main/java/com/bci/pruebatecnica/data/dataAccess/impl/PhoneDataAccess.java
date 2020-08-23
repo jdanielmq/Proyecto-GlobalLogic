@@ -35,7 +35,7 @@ public class PhoneDataAccess  implements IPhoneDataAccess {
 			iPhoneDao.saveAll(listaPhones);
 			return true;
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [PhoneDataAccess -> Metodo - saveAll] ", listaPhones);
+			logger.error("ERROR - [PhoneDataAccess -> Metodo - saveAll] ", e);
 			throw e;
 		}
 	}

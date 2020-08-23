@@ -1,8 +1,12 @@
 package com.bci.pruebatecnica.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,67 +33,78 @@ public class UserController {
 	private IUsuarioService iUsuarioService;
 	
 
-	@SuppressWarnings("rawtypes")
 	@PostMapping("/login")
-	public ResponseEntity saveUser(@RequestBody RequestUser reqUser){
+	public ResponseEntity<?> saveUser(@RequestBody RequestUser reqUser){
+		Map<String, Object> response = new HashMap<>();
 		try {
 			if(reqUser == null)
-				throw new Exception("Argumentos no válidos");
+				throw new IllegalArgumentException("Argumentos no válidos");
 			
 			if(reqUser.getName() == null || "".equals(reqUser.getName()))
-				throw new Exception("nombre viene nulo o vacio");
+				throw new IllegalArgumentException("nombre viene nulo o vacio");
 			
 			if(reqUser.getEmail() == null || "".equals(reqUser.getEmail()))
-				throw new Exception("email viene  nulo o vacio");
+				throw new IllegalArgumentException("email viene  nulo o vacio");
 			
 			if(reqUser.getPassword() == null || "".equals(reqUser.getPassword()))
-				throw new Exception("password nulo o vacio");
+				throw new IllegalArgumentException("password nulo o vacio");
 			
 			if(reqUser.getPhones() == null || reqUser.getPhones().size() == 0)
-				throw new Exception("lista de numeros vienes vacia");
+				throw new IllegalArgumentException("lista de numeros vienes vacia");
 			
 			return ResponseEntity.status(HttpStatus.OK).body(iUsuarioService.saveUser(reqUser));
+		}catch (IllegalArgumentException e) {
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}catch (DataAccessException e) {
+			response.put("mensaje", e.getMostSpecificCause().getMessage());
+			return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(response);
 		}catch (Exception e) {
-			logger.warn("ERROR - [Metodo - saveUser] ");
-			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setMensaje(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
+			logger.error("ERROR - [Metodo - saveUser] ");
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 	
 	
-	@SuppressWarnings("rawtypes")
+
 	@GetMapping("/{id}")
-	public ResponseEntity getUser(@PathVariable("id") long id){
+	public ResponseEntity<?> getUser(@PathVariable("id") long id){
+		Map<String, Object> response = new HashMap<>();
 		try {
 			if(id == 0)
-				throw new Exception("Argumentos no válidos");
+				throw new IllegalArgumentException("Argumentos no válidos");
 			
 			return ResponseEntity.status(HttpStatus.OK).body(iUsuarioService.getUserById(id));
+		}catch (IllegalArgumentException e) {
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}catch (DataAccessException e) {
+			response.put("mensaje", e.getMostSpecificCause().getMessage());
+			return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(response);
 		}catch (Exception e) {
 			logger.warn("ERROR - [Metodo - getUser] ");
-			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setMensaje(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 	
 	
-	@SuppressWarnings("rawtypes")
 	@PutMapping("/update/{id}")
-	public ResponseEntity<Wrapper> updateUser(@RequestBody RequestUser reqUser,  @PathVariable("id") long id){
+	public ResponseEntity<?> updateUser(@RequestBody RequestUser reqUser,  @PathVariable("id") long id){
+		Map<String, Object> response = new HashMap<>();
 		try {
 			if(reqUser == null)
-				throw new Exception("Argumentos no válidos");
+				throw new IllegalArgumentException("Argumentos no válidos");
 			
 			if(reqUser.getName() == null || "".equals(reqUser.getName()))
-				throw new Exception("nombre viene nulo o vacio");
+				throw new IllegalArgumentException("nombre viene nulo o vacio");
 			
 			if(reqUser.getEmail() == null || "".equals(reqUser.getEmail()))
-				throw new Exception("email viene  nulo o vacio");
+				throw new IllegalArgumentException("email viene  nulo o vacio");
 			
 			if(reqUser.getPassword() == null || "".equals(reqUser.getPassword()))
-				throw new Exception("password nulo o vacio");
+				throw new IllegalArgumentException("password nulo o vacio");
 			
 			Wrapper<String> mensaje = new Wrapper<String>();
 			if(iUsuarioService.updateUser(reqUser, id)) 
@@ -99,21 +114,26 @@ public class UserController {
 			
 			
 			return ResponseEntity.status(HttpStatus.OK).body(mensaje);
+		}catch (IllegalArgumentException e) {
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}catch (DataAccessException e) {
+			response.put("mensaje", e.getMostSpecificCause().getMessage());
+			return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(response);
 		}catch (Exception e) {
-			logger.warn("ERROR - [Metodo - updateUser] ");
-			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setMensaje(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
+			logger.error("ERROR - [Metodo - updateUser] ", e);
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 
 	
-	@SuppressWarnings("rawtypes")
 	@GetMapping("/logout/{id}")
-	public ResponseEntity<Wrapper> logOutUser(@PathVariable("id") long id){
+	public ResponseEntity<?> logOutUser(@PathVariable("id") long id){
+		Map<String, Object> response = new HashMap<>();
 		try {
 			if(id == 0)
-				throw new Exception("Argumentos no válidos");
+				throw new IllegalArgumentException("Argumentos no válidos");
 			
 	
 			Wrapper<String> mensaje = new Wrapper<String>();
@@ -124,11 +144,16 @@ public class UserController {
 			
 			
 			return ResponseEntity.status(HttpStatus.OK).body(mensaje);
+		}catch (IllegalArgumentException e) {
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}catch (DataAccessException e) {
+			response.put("mensaje", e.getMostSpecificCause().getMessage());
+			return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).body(response);
 		}catch (Exception e) {
 			logger.warn("ERROR - [Metodo - updateUser] ");
-			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setMensaje(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
+			response.put("mensaje", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 	

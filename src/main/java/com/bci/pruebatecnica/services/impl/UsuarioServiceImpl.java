@@ -41,7 +41,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public ResponseUser saveUser(RequestUser reqUser) throws Exception {
+	public ResponseUser saveUser(RequestUser reqUser) throws Exception, IllegalArgumentException, DataAccessException {
 		String mensaje = null;
 		long idUser = 0;
 		LocalDateTime dateTime = LocalDateTime.now();
@@ -49,18 +49,18 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			
 			/*validar el correo que cumpla con el formato*/
 			mensaje = Validador.validarEmail(reqUser.getEmail());
-			if(mensaje !=null) throw new Exception(mensaje);
+			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
 			
 			/*analizar si existe el correo en la base de datos*/
 			UserDto userDto = iUserDataAcces.findByEmail(reqUser.getEmail());
 			if(userDto != null && userDto.isActive()) 
-				throw new Exception("el usuario esta conectado el correo:"+ userDto.getEmail());
+				throw new IllegalArgumentException("el usuario esta conectado el correo:".concat(userDto.getEmail()));
 			
 			
 			/*valida la clave del usuario*/
 			mensaje = Validador.validarPassword(reqUser.getPassword());
-			if(mensaje !=null) throw new Exception(mensaje);
+			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
 			/*crear objeto de userDto */
 			if(userDto == null) {
@@ -74,7 +74,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			}
 			 
 			if(idUser==0)
-				throw new Exception("el sistema no pudo ingresar usuario");
+				throw new IllegalArgumentException("Nofue posible guardar el usuario en base de datos");
 			
 			/*carga la lista de phones y se verifica el ingresos de los numeros*/
 			List<Phone> listPhones = Mapper.evaluarPhones(reqUser.getPhones(), idUser, phoneRq -> phoneRq.getCityCode() != null && 
@@ -82,10 +82,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
 																								  phoneRq.getNumber() !=null);
 			if(listPhones != null && listPhones.size() > 0) {
 				if(!iPhoneDataAccess.saveAll(listPhones)) 
-					throw new Exception("No se pudieron ingresar los nùmeros de telèfonos");
+					throw new IllegalArgumentException("No fue posible guardar los números de telefonicos");
 				
 			}else
-				throw new Exception("No se puedo ingresar los nùmeros de telèfonos");
+				throw new IllegalArgumentException("No fue posible guardar los números de telefonicos");
 				
 			
 			
@@ -102,7 +102,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			
 		}catch (DataAccessException e) {
 			throw e;
+		}catch (IllegalArgumentException e) {
+			throw e;
 		}catch (Exception e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - getUserById] ", e);
 			throw e;
 		}
 	}
@@ -116,7 +119,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public ResponseUser getUserById(long id) throws Exception {
+	public ResponseUser getUserById(long id) throws Exception, IllegalArgumentException, DataAccessException {
 		try {
 			UserDto userDto = iUserDataAcces.findById(id);
 			if(userDto != null) {
@@ -129,12 +132,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 							);
 
 			}else
-				throw new Exception("Usuario con el id :"+ id + " no existe en las base de datos");
+				throw new IllegalArgumentException("Usuario con el id :".concat(String.valueOf(id)).concat(" no existe en las base de datos"));
 			
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - getUserById] ", id);
+			throw e;
+		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - getUserById] ", e);
 			throw e;
 		}
 	}
@@ -148,21 +153,21 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public boolean updateUser(RequestUser reqUser, long id) throws Exception {
+	public boolean updateUser(RequestUser reqUser, long id) throws Exception, IllegalArgumentException, DataAccessException{
 		String mensaje = null;
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
 			/*validar el correo que cumpla con el formato*/
 			mensaje = Validador.validarEmail(reqUser.getEmail());
-			if(mensaje !=null) throw new Exception(mensaje);
+			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
 			/*valida la clave del usuario*/
 			mensaje = Validador.validarPassword(reqUser.getPassword());
-			if(mensaje !=null) throw new Exception(mensaje);
+			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
 			UserDto userDto = iUserDataAcces.findById(id);
 			if(userDto == null)
-				throw new Exception("Usuario con el id :"+ id + " no existe en las base de datos");
+				throw new IllegalArgumentException("Usuario con el id :".concat(String.valueOf(id)).concat(" no existe en las base de datos"));
 				
 			
 			userDto.setName(reqUser.getName());
@@ -174,9 +179,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			
 			return idUser !=0 ? true : false;
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - updateUser] ", reqUser, id);
+			throw e;
+		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - updateUser] ", e);
 			throw e;
 		}
 	}
@@ -189,22 +196,24 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public boolean logOutUser(long id) throws Exception {
+	public boolean logOutUser(long id) throws Exception, IllegalArgumentException, DataAccessException {
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
 		
 			UserDto userDto = iUserDataAcces.findById(id);
 			if(userDto == null)
-				throw new Exception("Usuario con el id :"+ id + " no existe en las base de datos");
+				throw new IllegalArgumentException("Usuario con el id :".concat(String.valueOf(id)).concat(" no existe en las base de datos"));
 				
 			
 			userDto.setLastLogin(dateTime);
 			userDto.setActive(false);
 			return iUserDataAcces.saveUser(userDto) !=0 ? true : false;
 		}catch (DataAccessException e) {
-			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - logOutUser] ", id);
+			throw e;
+		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
+			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - logOutUser] ", e);
 			throw e;
 		}
 	}
