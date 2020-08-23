@@ -122,5 +122,11 @@
      {
          "data": "cierre de sesiòn."
      }
-      
-      
+
+# Conclusión de la API Restfull
+  * Cuenta con seguirdad con token en JWT y seguridad de Spring Boot.
+  * Se implementa Hibernate con la interfaces CrudRepository
+  * Se trabajo bajo el concepto cuenta con bajo acoplamiento y alta cohesión. (DI = Inyección de Dependecia)
+  * Trabaja con una base de dato H2 Database.
+    
+ # Fin
