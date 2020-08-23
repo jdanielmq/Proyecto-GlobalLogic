@@ -1,0 +1,51 @@
+######## login ##############
+
+@startuml
+UserControler -> IUsuarioService : saveUser(RequestUser)
+IUsuarioService -> Validador : validarEmail()
+IUsuarioService <- Validador : mensaje
+UserControler <-IUsuarioService :No cumple formato
+
+IUsuarioService -> IUserDataAcces :  findByEmail(correo)
+IUserDataAcces -> MapperUtils : convertToDto()
+IUserDataAcces <- MapperUtils : UserDto
+IUserDataAcces -> IUsuarioDao : findByEmail(email)
+IUserDataAcces <- IUsuarioDao : UserDto or Error
+IUsuarioService <- IUserDataAcces :  UserDto o nulo 
+UserControler <-IUsuarioService : active=true retorna mensaje
+
+IUsuarioService -> Validador : validarPassword()
+IUsuarioService <- Validador : mensaje
+UserControler <-IUsuarioService :No cumple formato
+
+IUsuarioService -> IUserDataAcces : NoExiste=SAVE / SiExiste=UPDATE
+IUserDataAcces -> MapperUtils : convertToEntity()
+IUserDataAcces <- MapperUtils : user
+IUserDataAcces -> IUsuarioDao : save(user)
+IUserDataAcces <- IUsuarioDao : entidad guardada
+IUsuarioService <- IUserDataAcces :  UUID 
+UserControler <-IUsuarioService : UUID == 0 retornar Error
+
+IUsuarioService -> Mapper : evaluarPhones()
+IUsuarioService <- Mapper : lista de phones
+IUsuarioService -> IPhoneDataAccess : saveAll(lista de phones)
+IPhoneDataAccess -> IPhoneDao : saveAll(lista de phones)
+IPhoneDataAccess <- IPhoneDao : true/false/Error
+IUsuarioService <- IPhoneDataAccess : true/false/Error
+UserControler <-IUsuarioService : False/Error retorna
+
+IUsuarioService -> Validador : getJWTToken()
+IUsuarioService <- Validador : token
+UserControler <- IUsuarioService : ResponseUser
+@enduml
+
+
+http://www.plantuml.com/plantuml/png/nPD1ZzCm48Nl-HLpJ0-hSaOKRI51MYHMrRPPpbOoNGoE9umdWVtts64RqZWeuSIbJUFlZLxVyzmwKInjRPB28RydAqm66MxUmbtXMiMQZiYTBX5UWrCT1YnzmEyjEWdFcsJAUUcZChfI5R4NTVqpvxNI9etfDpTNT8tMgQzuxSP3aPbxWhAj6uDm9gwLK39dnBz2pfIeVLcYy_FXh6trxlctcvAOaJR9XFAwJwffa0lH9eXAiXsod2WJIgUuDpV1-sEX2JUED5FakR4L39zpeyUIOJGGGyvCF1Td_9y75TZM42o72weKtU5Ek4LW56AhXcfM5dvGplqWhlv_v_UK_zHES7VSF-QmXQD--LqSilqfNrz_RaNByueRq3hanVh3DgM1NAuThOIquCc_yzzgPUt5NRQcx9xRxU3LfUhBvOhJlKGJFFcU_U7X2rbqyoKFhD5E55G8JK_FjjOF6loxbu3sngGJzIQ9s96U_adeJOw5mYrkpyeutFvzlIAZiMmvymz_w4lgYulrXFBny-b4tz0kBvK4B382iPC7T0rPXm5DRj5MRMr-0G00
+
+
+
+
+
+
+
+

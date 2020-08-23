@@ -1,0 +1,23 @@
+######## logout por id ##############
+
+
+@startuml
+UserControler -> IUsuarioService : logOutUser(id)
+IUsuarioService -> IUserDataAcces :  findById(id)
+IUserDataAcces -> IUsuarioDao : findById(id)
+IUserDataAcces <- IUsuarioDao : entidad User
+IUserDataAcces -> MapperUtils : convertToDto()
+IUserDataAcces <- MapperUtils : UserDto
+IUsuarioService <-IUserDataAcces : UserDto
+UserControler <-IUsuarioService :Resul=null=Error
+IUsuarioService -> IUserDataAcces : saveUser(userDto)
+IUserDataAcces -> MapperUtils : convertToEntity()
+IUserDataAcces <- MapperUtils : user
+IUserDataAcces -> IUsuarioDao : save(user)
+IUserDataAcces <- IUsuarioDao : entidad actualizada
+IUsuarioService <- IUserDataAcces :  UUID != 0/false o Error 
+UserControler <-IUsuarioService : true or false
+@enduml
+
+
+http://www.plantuml.com/plantuml/png/ZPBFJiCm38VlUmfpsmuJd1550xf33mW9w0DOZOSYUV7aE9N6qzDabxMgMC_vVlxpERjeg9QEl6eZwPi4Ks5Is3v3qyQ4wkMBjFSTmIEm_7mao-3Qkyrg2bmof3KQldGTnI421n_Swxbn9J5-lcvIempqV_3JTW9JCE_GGSPcAh_ZwKJQckSyHoUX9xLlgKtMSxN7U7ascQuuWAFaDJhoby6fla-AYQkGcAkzgkWYVn5xAiBJfSrc-QRxODxE2vRDfM-U9WzIXbX-6Emi8VjVT3WZSkQlj6rJmrq53_S7v4WWK4J1RRTWcWPUeGHNEmek7VaF

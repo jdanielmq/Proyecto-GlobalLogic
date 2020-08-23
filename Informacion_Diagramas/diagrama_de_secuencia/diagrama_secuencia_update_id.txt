@@ -1,0 +1,29 @@
+######## update por id ##############
+
+@startuml
+UserControler -> IUsuarioService : updateUser(RequestUser,id)
+IUsuarioService -> Validador : validarEmail()
+IUsuarioService <- Validador : mensaje
+UserControler <-IUsuarioService :No cumple formato
+IUsuarioService -> Validador : validarPassword()
+IUsuarioService <- Validador : mensaje
+UserControler <-IUsuarioService :No cumple formato
+IUsuarioService -> IUserDataAcces :  findById(id)
+IUserDataAcces -> IUsuarioDao : findById(id)
+IUserDataAcces <- IUsuarioDao : entidad User
+IUserDataAcces -> MapperUtils : convertToDto()
+IUserDataAcces <- MapperUtils : UserDto
+IUsuarioService <-IUserDataAcces : UserDto
+UserControler <-IUsuarioService :Resul=null=Error
+IUsuarioService -> Validador : getJWTToken()
+IUsuarioService <- Validador : token
+IUsuarioService -> IUserDataAcces : saveUser(userDto)
+IUserDataAcces -> MapperUtils : convertToEntity()
+IUserDataAcces <- MapperUtils : user
+IUserDataAcces -> IUsuarioDao : save(user)
+IUserDataAcces <- IUsuarioDao : entidad actualizada
+IUsuarioService <- IUserDataAcces :  UUID != 0/false o Error 
+UserControler <-IUsuarioService : true or false
+@enduml
+
+http://www.plantuml.com/plantuml/png/lP8nJ_Cm48Rt_Wf_Mofz5So8eWBf42GGAWtCf_YA38uldCz1vTTZfqj38vA9pPAVEpr-Nw-y04kexQpqoBVaXCaYgyMLAaeVW0qz8RUcGdMXGgD1C87P1Zy2Uadd_qRFPp_XEFyCrcZGn76oxSwyhi7Ox9I-NFJe6fs7D-mhHUZ4w85K5Uh6ejeHro0qqUCHlFyard-jKgGrEGXSLnNwk5xjZDCt-q9dASJ-zN47EL2aVuEZTnz69-aLAc43c--XQP1BCJPvLEHQPDbIBfGDxUxZtRNGG7ZzoIDqDC0D-c2NBbYxN3CJZrNvYdBtijtIExhn6YLXanhnq1v-U3Y8pwTdjuw9otv2V6drQDb9f9EONZLK4i2QBz0m5CZfxolB8bV_bkhyR0VMeoBLHQ_6srB20LL4ky7P2fqEjVq6

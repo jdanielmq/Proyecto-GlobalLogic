@@ -1,0 +1,18 @@
+######## buscar por id ##############
+
+@startuml
+UserControler -> IUsuarioService : getUserById(id)
+IUsuarioService -> IUserDataAcces :  findById(id)
+IUserDataAcces -> IUsuarioDao : findById(id)
+IUserDataAcces <- IUsuarioDao : entidad User
+IUserDataAcces -> MapperUtils : convertToDto()
+IUserDataAcces <- MapperUtils : UserDto
+IUsuarioService <-IUserDataAcces : UserDto
+UserControler <-IUsuarioService :Resul=0=Error
+IUsuarioService -> Validador : getJWTToken()
+IUsuarioService <- Validador : token
+UserControler <- IUsuarioService : ResponseUser
+@enduml
+
+
+http://www.plantuml.com/plantuml/png/VP6nJe0m48Ptdg8Z3YJEHWmg3fYuAEXyQK_JM7laUf3uzhQG62oDSx__-jztNH1WMRvSDGNaU_B2v91LSwE6AIp0bbwGLwjHNQaFb4JTVG-cjkQYoeazXDo3mAtM6696lLjlZedZy-6N7YZI_y7NJGQZ5sl0g8GL9Z_1F2DFObtgeSclo39IBrGNPcVuzYoKhnZ1BFcBPW8ZcFjxnh2uzh9zO2OkoNi5bnOYtbq_leqZVQAFTSyr_i2Ii5E1mWLZXPbym4rPXzx4o_y0
