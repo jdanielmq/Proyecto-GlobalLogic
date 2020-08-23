@@ -39,11 +39,11 @@ public class PruebaTecnicaApplication {
 			http.csrf().disable()
 				.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.authorizeRequests()
-				.antMatchers(HttpMethod.GET,"/h2-console/").permitAll()
+				.antMatchers(HttpMethod.GET,"/h2-console/*").permitAll()
 				.antMatchers(HttpMethod.POST, "/private/user/login").permitAll()
 				.anyRequest().authenticated();
 			}catch (Exception e) {
-				logger.error("ERROR - [WebSecurityConfig -> Metodo - configure] ");
+				logger.error("ERROR - [WebSecurityConfig -> Metodo - configure] ",e.getCause());
 			}
 		}
 	}

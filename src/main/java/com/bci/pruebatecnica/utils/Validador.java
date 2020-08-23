@@ -6,8 +6,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,10 +18,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 
 public class Validador {
+	private static final Logger logger = LoggerFactory.getLogger(Validador.class);
+	
 	public static final String EXP_REG_EMAIL = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.([a-zA-Z]{2,4})+$"; 
 	public static final String EXP_REG_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"; 
-	                                               
-
 	public static final String EMAIL_NO_VALIDO = "El correo no cumple con el formato de Ejemplo: juan@rodriguez.org"; 
 	public static final String PASSWORD_NO_VALIDA = "La clave no cumple con el formato de Mayùsculas, Minùsculas, Nùmeros y Simbolos";
 	
@@ -54,25 +57,30 @@ public class Validador {
 	}
 	
 	
-	public static String getJWTToken(String username) {
-		String secretKey = SECRET;
-		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER");
-		
-		String token = Jwts
-				.builder()
-				.setId("softtekJWT")
-				.setSubject(username)
-				.claim("authorities",
-						grantedAuthorities.stream()
-								.map(GrantedAuthority::getAuthority)
-								.collect(Collectors.toList()))
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
-				.signWith(SignatureAlgorithm.HS512,
-						secretKey.getBytes()).compact();
-
-		return "Bearer " + token;
+	public static String getJWTToken(String username) throws Exception {
+		try {
+			String secretKey = SECRET;
+			List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+					.commaSeparatedStringToAuthorityList("ROLE_USER");
+			
+			String token = Jwts
+					.builder()
+					.setId("softtekJWT")
+					.setSubject(username)
+					.claim("authorities",
+							grantedAuthorities.stream()
+									.map(GrantedAuthority::getAuthority)
+									.collect(Collectors.toList()))
+					.setIssuedAt(new Date(System.currentTimeMillis()))
+					.setExpiration(new Date(System.currentTimeMillis() + 600000)) // 14000000L
+					.signWith(SignatureAlgorithm.HS512,
+							secretKey.getBytes()).compact();
+	
+			return "Bearer " + token;
+		}catch (Exception e) {
+			logger.error("ERROR - [Validador -> Metodo - getJWTToken] ", e.getCause());
+			throw new Exception("Error, al crear el token .",e.getCause());
+		}
 	}
 	
 
