@@ -11,6 +11,15 @@ import com.bci.pruebatecnica.data.entity.User;
 
 public class Mapper {
 	
+	/**
+	 *  Metodo que setea el id del usuario a los obejetos phone 
+	 *  y retorna lista de phone
+	 *  
+	 * @param List<RequestPhone>  
+	 * @param Long  
+	 * @param Predicate<RequestPhone>  
+	 * @return List<Phone>
+	 */
 	public static List<Phone> evaluarPhones(List<RequestPhone> listaPhoneDtos, Long idUser, Predicate<RequestPhone> predicate) {
 		List<Phone> listaPhones = new ArrayList<>(0);
 		for (RequestPhone rp : listaPhoneDtos) {

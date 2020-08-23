@@ -20,11 +20,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.modelmapper:modelmapper:0.7.5'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'org.spockframework:spock-core:2.0-M3-groovy-3.0'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 }
+
 
 test {
 	useJUnitPlatform()

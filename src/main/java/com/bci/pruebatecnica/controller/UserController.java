@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bci.pruebatecnica.data.dto.RequestUser;
-import com.bci.pruebatecnica.data.dto.ResponseUser;
 import com.bci.pruebatecnica.data.dto.Wrapper;
 import com.bci.pruebatecnica.services.IUsuarioService;
 
@@ -32,8 +31,7 @@ public class UserController {
 
 	@SuppressWarnings("rawtypes")
 	@PostMapping("/login")
-	public ResponseEntity<Wrapper> saveUser(@RequestBody RequestUser reqUser){
-		Wrapper<ResponseUser> response = new Wrapper<>();
+	public ResponseEntity saveUser(@RequestBody RequestUser reqUser){
 		try {
 			if(reqUser == null)
 				throw new Exception("Argumentos no válidos");
@@ -50,13 +48,11 @@ public class UserController {
 			if(reqUser.getPhones() == null || reqUser.getPhones().size() == 0)
 				throw new Exception("lista de numeros vienes vacia");
 			
-			
-			response.setData(iUsuarioService.saveUser(reqUser));
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+			return ResponseEntity.status(HttpStatus.OK).body(iUsuarioService.saveUser(reqUser));
 		}catch (Exception e) {
 			logger.warn("ERROR - [Metodo - saveUser] ");
 			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setData(e.getMessage());
+			mensaje.setMensaje(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
 		}
 	}
@@ -64,18 +60,16 @@ public class UserController {
 	
 	@SuppressWarnings("rawtypes")
 	@GetMapping("/{id}")
-	public ResponseEntity<Wrapper> getUser(@PathVariable("id") long id){
-		Wrapper<ResponseUser> response = new Wrapper<>();
+	public ResponseEntity getUser(@PathVariable("id") long id){
 		try {
 			if(id == 0)
 				throw new Exception("Argumentos no válidos");
 			
-			response.setData(iUsuarioService.getUserById(id));
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+			return ResponseEntity.status(HttpStatus.OK).body(iUsuarioService.getUserById(id));
 		}catch (Exception e) {
 			logger.warn("ERROR - [Metodo - getUser] ");
 			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setData(e.getMessage());
+			mensaje.setMensaje(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
 		}
 	}
@@ -99,16 +93,16 @@ public class UserController {
 			
 			Wrapper<String> mensaje = new Wrapper<String>();
 			if(iUsuarioService.updateUser(reqUser, id)) 
-				mensaje.setData("Se modificaron los datos del usuario correctamente.");
+				mensaje.setMensaje("Se modificaron los datos del usuario correctamente.");
 			else
-				mensaje.setData("El sistema no puede modificar los datos.");
+				mensaje.setMensaje("El sistema no puede modificar los datos.");
 			
 			
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(mensaje);
+			return ResponseEntity.status(HttpStatus.OK).body(mensaje);
 		}catch (Exception e) {
 			logger.warn("ERROR - [Metodo - updateUser] ");
 			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setData(e.getMessage());
+			mensaje.setMensaje(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
 		}
 	}
@@ -124,16 +118,16 @@ public class UserController {
 	
 			Wrapper<String> mensaje = new Wrapper<String>();
 			if(iUsuarioService.logOutUser(id)) 
-				mensaje.setData("cierre de sesiòn.");
+				mensaje.setMensaje("cierre de sesión.");
 			else
-				mensaje.setData("problema para cerrar sesion");
+				mensaje.setMensaje("problema para cerrar sesión");
 			
 			
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(mensaje);
+			return ResponseEntity.status(HttpStatus.OK).body(mensaje);
 		}catch (Exception e) {
 			logger.warn("ERROR - [Metodo - updateUser] ");
 			Wrapper<String> mensaje = new Wrapper<String>(); 
-			mensaje.setData(e.getMessage());
+			mensaje.setMensaje(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
 		}
 	}

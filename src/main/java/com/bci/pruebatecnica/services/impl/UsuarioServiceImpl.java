@@ -2,7 +2,6 @@ package com.bci.pruebatecnica.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	@Autowired
 	private IPhoneDataAccess iPhoneDataAccess;
 	
-
+	
+	/**
+	 *  Metodo donde se guarda la información del usuario
+	 *  
+	 * @param RequestUser  
+	 * @return ResponseUser
+	 * @exception Exception or DataAccessException
+	 */
 	@Override
 	public ResponseUser saveUser(RequestUser reqUser) throws Exception {
 		String mensaje = null;
@@ -100,7 +106,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			throw e;
 		}
 	}
-
+	
+	
+	/**
+	 *  Metodo que obtiene la información de usuario
+	 *  
+	 * @param id  
+	 * @return ResponseUser
+	 * @exception Exception or DataAccessException
+	 */
 	@Override
 	public ResponseUser getUserById(long id) throws Exception {
 		try {
@@ -124,7 +138,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			throw e;
 		}
 	}
-
+	
+	/**
+	 *  Metodo que actualizar información del usuario
+	 *  
+	 * @param RequestUser  
+	 * @param id
+	 * @return boolean
+	 * @exception Exception or DataAccessException
+	 */
 	@Override
 	public boolean updateUser(RequestUser reqUser, long id) throws Exception {
 		String mensaje = null;
@@ -158,7 +180,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			throw e;
 		}
 	}
-
+	
+	/**
+	 *  Metodo que cierra la sesión del usuario
+	 *  
+	 * @param id
+	 * @return boolean
+	 * @exception Exception or DataAccessException
+	 */
 	@Override
 	public boolean logOutUser(long id) throws Exception {
 		LocalDateTime dateTime = LocalDateTime.now();

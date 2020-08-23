@@ -29,7 +29,11 @@ public class Validador {
 	
 	
 	
-
+	/**
+	 *  Metodo que válida la email con el formato correcto
+	 *  
+	 * @param password
+	 */
 	public  static String validarEmail(String email) throws Exception {
 		try {
 			Pattern pattern = Pattern.compile(EXP_REG_EMAIL);
@@ -42,7 +46,12 @@ public class Validador {
 			throw new Exception("Error, en la validaciòn del email",e.getCause());
 		}
 	}
-
+	
+	/**
+	 *  Metodo que válida la passsword con el formato correcto
+	 *  
+	 * @param password
+	 */
 	public  static String validarPassword(String password) throws Exception {
 		try {
 			Pattern pattern = Pattern.compile(EXP_REG_PASSWORD);
@@ -56,8 +65,13 @@ public class Validador {
 		}
 	}
 	
+	/**
+	 *  Metodo que genera el Token con el prefijo
+	 *  
+	 * @param id
+	 */
 	
-	public static String getJWTToken(String username) throws Exception {
+	public static String getJWTToken(String id) throws Exception {
 		try {
 			String secretKey = SECRET;
 			List<GrantedAuthority> grantedAuthorities = AuthorityUtils
@@ -66,7 +80,7 @@ public class Validador {
 			String token = Jwts
 					.builder()
 					.setId("softtekJWT")
-					.setSubject(username)
+					.setSubject(id)
 					.claim("authorities",
 							grantedAuthorities.stream()
 									.map(GrantedAuthority::getAuthority)

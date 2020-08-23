@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,17 +25,34 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
+	private static final Logger logger = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
 
 	private final String HEADER = "Authorization";
 	private final String PREFIX = "Bearer ";
 	private final String SECRET = "implementando-seguridad-con-jwt";
 	
 	
+	/**
+	 *  Metodo que se dispara cada vez que se hace una pettición a la API
+	 *  
+	 * @param HttpServletRequest
+	 * @param HttpServletResponse
+	 * @param FilterChain
+	 * @return void
+	 * @exception ServletException, IOException
+	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 		try {
 			if (existeJWTToken(request, response)) {
 				Claims claims = validateToken(request);
+				if(claims == null) {
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error de autorizacion");
+					return;
+				}
+					
+					
 				if (claims.get("authorities") != null) {
 					setUpSpringAuthentication(claims);
 				} else {
@@ -41,24 +60,39 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 				}
 			} else {
 					SecurityContextHolder.clearContext();
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 			chain.doFilter(request, response);
-		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException  e ) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
 			return;
 		}
 	}
 	
+	/**
+	 *  Metodo que obtienen los CLaims {"Reclamaciones"}
+	 *  
+	 * @param HttpServletRequest
+	 * @return Claims
+	 * @exception Exception
+	 */	
 	private Claims validateToken(HttpServletRequest request) {
-		String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
+		try {
+			String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+			return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();			
+		}catch (Exception e) {
+			logger.error("Error de expiracion del token", e.getCause());
+			e.printStackTrace();
+		}
+		return null;
 	}
+	
 	/**
 	 * Metodo para autenticarnos dentro del flujo de Spring
 	 * 
 	 * @param claims
+	 * @return void
+	 * @exception 
 	 */
 	private void setUpSpringAuthentication(Claims claims) {
 		@SuppressWarnings("unchecked")
@@ -70,6 +104,15 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 	}
 	
+	
+	/**
+	 *  Metodo que verifica el cabecera(HEADER) y el prefijo(PREFIX)
+	 *  
+	 * @param HttpServletRequest
+	 * @param HttpServletResponse
+	 * @return booelan
+	 * @exception 
+	 */	
 	private boolean existeJWTToken(HttpServletRequest request, HttpServletResponse res) {
 		String authenticationHeader = request.getHeader(HEADER);
 		if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX))

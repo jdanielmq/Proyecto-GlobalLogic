@@ -23,6 +23,13 @@ public class UserDataAcces implements IUserDataAcces {
 	@Autowired
 	private IUsuarioDao iUsuarioDao;
 
+	/**
+	 *  Metodo que recibe un objeto para transformalo a entidad y guardarlo
+	 *  
+	 * @param UserDto
+	 * @return long
+	 * @exception DataAccessException
+	 */	
 	@Override
 	@Transactional
 	public long saveUser(UserDto userDto) throws DataAccessException {
@@ -35,7 +42,16 @@ public class UserDataAcces implements IUserDataAcces {
 			throw e;
 		}
 	}
-
+	
+	/**
+	 *  Metodo donde se busca por el atributo email en la base datos
+	 *  si existe en la base de datos, el objeto se transforman en DTO y se retorna.
+	 *  si no existe, retorna un null
+	 *  
+	 * @param String
+	 * @return UserDto
+	 * @exception DataAccessException
+	 */	
 	@Override
 	@Transactional(readOnly = true)
 	public UserDto findByEmail(String email) throws DataAccessException {
@@ -51,7 +67,16 @@ public class UserDataAcces implements IUserDataAcces {
 			throw e;
 		}
 	}
-
+	
+	/**
+	 *  Metodo donde se busca por el atributo id en la base datos
+	 *  si existe en la base de datos, el objeto se transforman en DTO y se retorna.
+	 *  si no existe, retorna un null
+	 *  
+	 * @param String
+	 * @return UserDto
+	 * @exception DataAccessException
+	 */	
 	@Override
 	@Transactional(readOnly = true)
 	public UserDto findById(Long id) throws DataAccessException {

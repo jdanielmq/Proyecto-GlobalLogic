@@ -15,7 +15,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.bci.pruebatecnica.jwt.segurity.JWTAuthorizationFilter;
-import com.bci.pruebatecnica.services.impl.UsuarioServiceImpl;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 
 @ServletComponentScan
@@ -42,6 +45,9 @@ public class PruebaTecnicaApplication {
 				.antMatchers(HttpMethod.GET,"/h2-console/*").permitAll()
 				.antMatchers(HttpMethod.POST, "/private/user/login").permitAll()
 				.anyRequest().authenticated();
+			
+			}catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException  e ) {
+				logger.error("ERROR - [WebSecurityConfig -> Metodo - configure] ",e.getCause());
 			}catch (Exception e) {
 				logger.error("ERROR - [WebSecurityConfig -> Metodo - configure] ",e.getCause());
 			}

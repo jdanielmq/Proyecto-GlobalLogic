@@ -8,6 +8,12 @@ public class Fecha {
 	
 	public static final String FORMAT_DDMMYYYY_HHMM_A = "dd'-'MM'-'YYYY' 'HH:mm a";
 	
+	/**
+	 *  Metodo de formateo de Fecha
+	 *  
+	 * @param LocalDateTime  
+	 * @return String
+	 */
 	public static String getLocalDateTimeString(LocalDateTime date) throws Exception {
 		try {
 			Locale locale = new Locale("es", "CL");
