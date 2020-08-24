@@ -24,6 +24,13 @@ public class ResponseUser implements Serializable{
 		this.token = token;
 		this.active = active;
 	}
+	
+	
+	public ResponseUser() {
+		super();
+	}
+
+
 	public Long getId() {
 		return id;
 	}

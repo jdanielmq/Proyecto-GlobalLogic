@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RequestUser implements Serializable{
+public class RequestUser implements Serializable, Cloneable{
 	/**
 	 * 
 	 */
@@ -49,6 +49,19 @@ public class RequestUser implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	} 
+	
+    public RequestUser() {
+		super();
+	}
+	public Object clone(){
+        Object obj=null;
+        try{
+            obj=super.clone();
+        }catch(CloneNotSupportedException ex){
+            System.out.println(" no se puede duplicar");
+        }
+        return obj;
+    }
 	
 
 

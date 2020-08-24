@@ -41,7 +41,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public ResponseUser saveUser(RequestUser reqUser) throws Exception, IllegalArgumentException, DataAccessException {
+	public ResponseUser saveUser(RequestUser reqUser) throws Exception, IllegalArgumentException, NullPointerException {
 		String mensaje = null;
 		long idUser = 0;
 		LocalDateTime dateTime = LocalDateTime.now();
@@ -101,7 +101,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 					                userDto.isActive());
 			
 		}catch (DataAccessException e) {
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
@@ -119,7 +119,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public ResponseUser getUserById(long id) throws Exception, IllegalArgumentException, DataAccessException {
+	public ResponseUser getUserById(long id) throws Exception, IllegalArgumentException, NullPointerException {
 		try {
 			UserDto userDto = iUserDataAcces.findById(id);
 			if(userDto != null) {
@@ -153,7 +153,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public boolean updateUser(RequestUser reqUser, long id) throws Exception, IllegalArgumentException, DataAccessException{
+	public boolean updateUser(RequestUser reqUser, long id) throws Exception, IllegalArgumentException, NullPointerException{
 		String mensaje = null;
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
@@ -179,7 +179,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			
 			return idUser !=0 ? true : false;
 		}catch (DataAccessException e) {
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
@@ -196,7 +196,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public boolean logOutUser(long id) throws Exception, IllegalArgumentException, DataAccessException {
+	public boolean logOutUser(long id) throws Exception, IllegalArgumentException, NullPointerException {
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
 		
@@ -209,7 +209,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			userDto.setActive(false);
 			return iUserDataAcces.saveUser(userDto) !=0 ? true : false;
 		}catch (DataAccessException e) {
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
