@@ -19,19 +19,24 @@ public class Mapper {
 	 * @param Long  
 	 * @param Predicate<RequestPhone>  
 	 * @return List<Phone>
+	 * @exception Exception
 	 */
-	public static List<Phone> evaluarPhones(List<RequestPhone> listaPhoneDtos, Long idUser, Predicate<RequestPhone> predicate) {
-		List<Phone> listaPhones = new ArrayList<>(0);
-		for (RequestPhone rp : listaPhoneDtos) {
-			if(predicate.test(rp)){
-				Phone p = new Phone();
-				p.setCountryCode(rp.getContryCode());
-				p.setCityCode(rp.getCityCode());
-				p.setNumber(rp.getNumber());
-				p.setUser(new User(idUser));
-				listaPhones.add(p);
+	public static List<Phone> evaluarPhones(List<RequestPhone> listaPhoneDtos, Long idUser, Predicate<RequestPhone> predicate)  throws Exception{
+		try {
+			List<Phone> listaPhones = new ArrayList<>(0);
+			for (RequestPhone rp : listaPhoneDtos) {
+				if(predicate.test(rp)){
+					Phone p = new Phone();
+					p.setCountryCode(rp.getContryCode());
+					p.setCityCode(rp.getCityCode());
+					p.setNumber(rp.getNumber());
+					p.setUser(new User(idUser));
+					listaPhones.add(p);
+				}
 			}
+			return listaPhones;
+		}catch (Exception e) {
+			throw new Exception(e.getMessage());
 		}
-		return listaPhones;
 	}
 }

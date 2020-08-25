@@ -32,14 +32,14 @@ public class UserDataAcces implements IUserDataAcces {
 	 */	
 	@Override
 	@Transactional
-	public long saveUser(UserDto userDto) throws DataAccessException {
+	public long saveUser(UserDto userDto) throws NullPointerException {
 		try {
 			User user = (User)MapperUtils.convertToEntity(new User(),userDto);
 			iUsuarioDao.save(user);
 			return user.getIdUser();
 		}catch (DataAccessException e) {
 			logger.error("ERROR - [UserDataAccess -> Metodo - saveUser] ", e);
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class UserDataAcces implements IUserDataAcces {
 	 */	
 	@Override
 	@Transactional(readOnly = true)
-	public UserDto findByEmail(String email) throws DataAccessException {
+	public UserDto findByEmail(String email) throws NullPointerException {
 		try {
 			User user = iUsuarioDao.findByEmail(email);
 			if(user == null) 
@@ -64,7 +64,7 @@ public class UserDataAcces implements IUserDataAcces {
 
 		}catch (DataAccessException e) {
 			logger.error("ERROR - [UserDataAccess -> Metodo - findByEmail] ", e);
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class UserDataAcces implements IUserDataAcces {
 	 */	
 	@Override
 	@Transactional(readOnly = true)
-	public UserDto findById(Long id) throws DataAccessException {
+	public UserDto findById(Long id) throws NullPointerException {
 		try {
 			User user = iUsuarioDao.findById(id).orElse(null);
 			if(user == null) 
@@ -88,7 +88,7 @@ public class UserDataAcces implements IUserDataAcces {
 			return (UserDto)MapperUtils.convertToDto(user, new UserDto());
 		}catch (DataAccessException e) {
 			logger.error("ERROR - [UserDataAccess -> Metodo - findById] ", e);
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}
 	}
 

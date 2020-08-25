@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.bci.pruebatecnica.data.dataAccess.IPhoneDataAccess;
@@ -38,8 +37,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 *  
 	 * @param RequestUser  
 	 * @return ResponseUser
-	 * @exception Exception or DataAccessException
+	 * @exception Exception, IllegalArgumentException, NullPointerException 
 	 */
+
 	@Override
 	public ResponseUser saveUser(RequestUser reqUser) throws Exception, IllegalArgumentException, NullPointerException {
 		String mensaje = null;
@@ -51,43 +51,38 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			mensaje = Validador.validarEmail(reqUser.getEmail());
 			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
+			/*valida la clave del usuario*/
+			mensaje = Validador.validarPassword(reqUser.getPassword());
+			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
 			/*analizar si existe el correo en la base de datos*/
 			UserDto userDto = iUserDataAcces.findByEmail(reqUser.getEmail());
 			if(userDto != null && userDto.isActive()) 
 				throw new IllegalArgumentException("el usuario esta conectado el correo:".concat(userDto.getEmail()));
 			
-			
-			/*valida la clave del usuario*/
-			mensaje = Validador.validarPassword(reqUser.getPassword());
-			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
-			
 			/*crear objeto de userDto */
 			if(userDto == null) {
 				userDto = new UserDto(reqUser.getName(),reqUser.getEmail(),reqUser.getPassword(),dateTime,dateTime,dateTime, true);
 				idUser = iUserDataAcces.saveUser(userDto);
-			}else { 
+			} 
+			
+			/*actualizacion de datos cuando */
+			if(!userDto.isActive()) {
 				idUser = userDto.getIdUser();
 				userDto.setActive(true);
 				userDto.setLastLogin(dateTime);
-				iUserDataAcces.saveUser(userDto);
+				iUserDataAcces.saveUser(userDto);				
 			}
-			 
-			if(idUser==0)
-				throw new IllegalArgumentException("Nofue posible guardar el usuario en base de datos");
 			
+		
 			/*carga la lista de phones y se verifica el ingresos de los numeros*/
-			List<Phone> listPhones = Mapper.evaluarPhones(reqUser.getPhones(), idUser, phoneRq -> phoneRq.getCityCode() != null && 
-																								  phoneRq.getContryCode() !=null && 
-																								  phoneRq.getNumber() !=null);
-			if(listPhones != null && listPhones.size() > 0) {
-				if(!iPhoneDataAccess.saveAll(listPhones)) 
-					throw new IllegalArgumentException("No fue posible guardar los números de telefonicos");
-				
-			}else
-				throw new IllegalArgumentException("No fue posible guardar los números de telefonicos");
-				
-			
+			 List<Phone>  listPhones = Mapper.evaluarPhones(reqUser.getPhones(), idUser, phoneRq -> phoneRq.getCityCode() != null && 
+																									  phoneRq.getContryCode() !=null && 
+																									  phoneRq.getNumber() !=null);
+
+
+			iPhoneDataAccess.saveAll(listPhones); 
+
 			
 			/*crear token en base id generado al guardar*/
 			String token = Validador.getJWTToken(String.valueOf(idUser));
@@ -100,8 +95,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 					                token,
 					                userDto.isActive());
 			
-		}catch (DataAccessException e) {
-			throw new NullPointerException(e.getMostSpecificCause().getMessage());
+		}catch (NullPointerException e) {
+			throw e;
 		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
@@ -119,10 +114,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public ResponseUser getUserById(long id) throws Exception, IllegalArgumentException, NullPointerException {
+	public ResponseUser getUserById(long id) throws Exception, NullPointerException {
 		try {
 			UserDto userDto = iUserDataAcces.findById(id);
-			if(userDto != null) {
 				return new ResponseUser(userDto.getIdUser(),
 					        Fecha.getLocalDateTimeString(userDto.getCreateDate()),
 					        Fecha.getLocalDateTimeString(userDto.getModified()),
@@ -131,12 +125,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 					        userDto.isActive()
 							);
 
-			}else
-				throw new IllegalArgumentException("Usuario con el id :".concat(String.valueOf(id)).concat(" no existe en las base de datos"));
 			
-		}catch (DataAccessException e) {
-			throw e;
-		}catch (IllegalArgumentException e) {
+		}catch (NullPointerException e) {
 			throw e;
 		}catch (Exception e) {
 			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - getUserById] ", e);
@@ -166,20 +156,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
 			
 			UserDto userDto = iUserDataAcces.findById(id);
-			if(userDto == null)
-				throw new IllegalArgumentException("Usuario con el id :".concat(String.valueOf(id)).concat(" no existe en las base de datos"));
-				
 			
 			userDto.setName(reqUser.getName());
 			userDto.setEmail(reqUser.getName());
 			userDto.setPassword(reqUser.getPassword());
 			userDto.setModified(dateTime);
-			
-			long idUser = iUserDataAcces.saveUser(userDto);
-			
-			return idUser !=0 ? true : false;
-		}catch (DataAccessException e) {
-			throw new NullPointerException(e.getMostSpecificCause().getMessage());
+		
+			return iUserDataAcces.saveUser(userDto) !=0 ? true : false;
+		}catch (NullPointerException e) {
+			throw e;
 		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {
@@ -196,20 +181,19 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @exception Exception or DataAccessException
 	 */
 	@Override
-	public boolean logOutUser(long id) throws Exception, IllegalArgumentException, NullPointerException {
+	public boolean logOutUser(long id) throws Exception, NullPointerException {
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
 		
 			UserDto userDto = iUserDataAcces.findById(id);
-			if(userDto == null)
-				throw new IllegalArgumentException("Usuario con el id :".concat(String.valueOf(id)).concat(" no existe en las base de datos"));
-				
-			
 			userDto.setLastLogin(dateTime);
 			userDto.setActive(false);
-			return iUserDataAcces.saveUser(userDto) !=0 ? true : false;
-		}catch (DataAccessException e) {
-			throw new NullPointerException(e.getMostSpecificCause().getMessage());
+			if(iUserDataAcces.saveUser(userDto)!=0)
+				return true;
+			
+			return false;
+		}catch (NullPointerException e) {
+			throw e;
 		}catch (IllegalArgumentException e) {
 			throw e;
 		}catch (Exception e) {

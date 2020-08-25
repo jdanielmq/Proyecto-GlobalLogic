@@ -2,7 +2,6 @@ package com.bci.pruebatecnica.controller;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.validateMockitoUsage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.bci.pruebatecnica.data.dto.RequestPhone;

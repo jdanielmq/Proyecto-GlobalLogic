@@ -26,17 +26,17 @@ public class PhoneDataAccess  implements IPhoneDataAccess {
 	 *  
 	 * @param List<Phone>
 	 * @return boolean
-	 * @exception DataAccessException
+	 * @exception NullPointerException
 	 */	
 	@Override
 	@Transactional
-	public boolean saveAll(List<Phone> listaPhones) throws DataAccessException {
+	public boolean saveAll(List<Phone> listaPhones) throws NullPointerException {
 		try {
 			iPhoneDao.saveAll(listaPhones);
 			return true;
 		}catch (DataAccessException e) {
 			logger.error("ERROR - [PhoneDataAccess -> Metodo - saveAll] ", e);
-			throw e;
+			throw new NullPointerException(e.getMostSpecificCause().getMessage());
 		}
 	}
 }
