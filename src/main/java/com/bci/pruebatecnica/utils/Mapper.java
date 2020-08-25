@@ -19,10 +19,9 @@ public class Mapper {
 	 * @param Long  
 	 * @param Predicate<RequestPhone>  
 	 * @return List<Phone>
-	 * @exception Exception
+	 * 
 	 */
-	public static List<Phone> evaluarPhones(List<RequestPhone> listaPhoneDtos, Long idUser, Predicate<RequestPhone> predicate)  throws Exception{
-		try {
+	public static List<Phone> evaluarPhones(List<RequestPhone> listaPhoneDtos, Long idUser, Predicate<RequestPhone> predicate){
 			List<Phone> listaPhones = new ArrayList<>(0);
 			for (RequestPhone rp : listaPhoneDtos) {
 				if(predicate.test(rp)){
@@ -35,8 +34,5 @@ public class Mapper {
 				}
 			}
 			return listaPhones;
-		}catch (Exception e) {
-			throw new Exception(e.getMessage());
-		}
 	}
 }

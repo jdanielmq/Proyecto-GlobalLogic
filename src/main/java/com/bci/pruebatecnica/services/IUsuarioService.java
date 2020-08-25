@@ -11,6 +11,6 @@ public interface IUsuarioService {
 	
 	public boolean updateUser(RequestUser reqUser, long id) throws Exception,IllegalArgumentException, NullPointerException;
 	
-	public boolean logOutUser(long id) throws Exception,IllegalArgumentException, NullPointerException;
+	public boolean logOutUser(long id) throws Exception, NullPointerException;
 	
 }

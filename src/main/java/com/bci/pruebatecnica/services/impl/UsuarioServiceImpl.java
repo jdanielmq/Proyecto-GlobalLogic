@@ -1,6 +1,7 @@
 package com.bci.pruebatecnica.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.bci.pruebatecnica.data.dataAccess.IPhoneDataAccess;
 import com.bci.pruebatecnica.data.dataAccess.IUserDataAcces;
+import com.bci.pruebatecnica.data.dto.RequestPhone;
 import com.bci.pruebatecnica.data.dto.RequestUser;
 import com.bci.pruebatecnica.data.dto.ResponseUser;
 import com.bci.pruebatecnica.data.dto.UserDto;
@@ -42,18 +44,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
 	@Override
 	public ResponseUser saveUser(RequestUser reqUser) throws Exception, IllegalArgumentException, NullPointerException {
-		String mensaje = null;
 		long idUser = 0;
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
 			
 			/*validar el correo que cumpla con el formato*/
-			mensaje = Validador.validarEmail(reqUser.getEmail());
-			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
+			validarCorreo(reqUser.getEmail());
 			
 			/*valida la clave del usuario*/
-			mensaje = Validador.validarPassword(reqUser.getPassword());
-			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
+			validarPassword(reqUser.getPassword());
 			
 			/*analizar si existe el correo en la base de datos*/
 			UserDto userDto = iUserDataAcces.findByEmail(reqUser.getEmail());
@@ -66,19 +65,17 @@ public class UsuarioServiceImpl implements IUsuarioService {
 				idUser = iUserDataAcces.saveUser(userDto);
 			} 
 			
-			/*actualizacion de datos cuando */
+			/*actualizacion de datos cuando existe y este desactivado */
 			if(!userDto.isActive()) {
 				idUser = userDto.getIdUser();
 				userDto.setActive(true);
-				userDto.setLastLogin(dateTime);
+				userDto.setModified(dateTime);
 				iUserDataAcces.saveUser(userDto);				
 			}
 			
 		
 			/*carga la lista de phones y se verifica el ingresos de los numeros*/
-			 List<Phone>  listPhones = Mapper.evaluarPhones(reqUser.getPhones(), idUser, phoneRq -> phoneRq.getCityCode() != null && 
-																									  phoneRq.getContryCode() !=null && 
-																									  phoneRq.getNumber() !=null);
+			 List<Phone>  listPhones = crearListaEntityPhone(reqUser.getPhones(),idUser);
 
 
 			iPhoneDataAccess.saveAll(listPhones); 
@@ -111,7 +108,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 *  
 	 * @param id  
 	 * @return ResponseUser
-	 * @exception Exception or DataAccessException
+	 * @exception Exception or NullPointerException
 	 */
 	@Override
 	public ResponseUser getUserById(long id) throws Exception, NullPointerException {
@@ -140,20 +137,18 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 * @param RequestUser  
 	 * @param id
 	 * @return boolean
-	 * @exception Exception or DataAccessException
+	 * @exception Exception or IllegalArgumentException or NullPointerException
 	 */
 	@Override
 	public boolean updateUser(RequestUser reqUser, long id) throws Exception, IllegalArgumentException, NullPointerException{
-		String mensaje = null;
 		LocalDateTime dateTime = LocalDateTime.now();
 		try {
 			/*validar el correo que cumpla con el formato*/
-			mensaje = Validador.validarEmail(reqUser.getEmail());
-			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
+			validarCorreo(reqUser.getEmail());
 			
 			/*valida la clave del usuario*/
-			mensaje = Validador.validarPassword(reqUser.getPassword());
-			if(mensaje !=null) throw new IllegalArgumentException(mensaje);
+			validarPassword(reqUser.getPassword());
+
 			
 			UserDto userDto = iUserDataAcces.findById(id);
 			
@@ -178,7 +173,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	 *  
 	 * @param id
 	 * @return boolean
-	 * @exception Exception or DataAccessException
+	 * @exception Exception or NullPointerException
 	 */
 	@Override
 	public boolean logOutUser(long id) throws Exception, NullPointerException {
@@ -191,7 +186,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			if(iUserDataAcces.saveUser(userDto)!=0)
 				return true;
 			
-			return false;
 		}catch (NullPointerException e) {
 			throw e;
 		}catch (IllegalArgumentException e) {
@@ -200,5 +194,31 @@ public class UsuarioServiceImpl implements IUsuarioService {
 			logger.error("ERROR - [UsuarioServiceImpl -> Metodo - logOutUser] ", e);
 			throw e;
 		}
+		return false;
 	}
+	
+	
+	private List<Phone> crearListaEntityPhone(ArrayList<RequestPhone> listaPhones, long idUser){
+			return Mapper.evaluarPhones(listaPhones, idUser, phoneRq -> phoneRq.getCityCode() != null && 
+					  phoneRq.getContryCode() !=null && 
+					  phoneRq.getNumber() !=null);				
+
+	}
+	
+	
+	private void validarCorreo(String email) {
+		String mensaje = Validador.validarEmail(email);
+		if(mensaje !=null) 
+			throw new IllegalArgumentException(mensaje);
+		
+	}
+	private void validarPassword(String password) {
+		String mensaje = Validador.validarPassword(password);
+		if(mensaje !=null) 
+			throw new IllegalArgumentException(mensaje);
+		
+	}
+	
+
+
 }

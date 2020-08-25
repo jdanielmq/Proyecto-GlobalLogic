@@ -118,7 +118,7 @@ public class UsuarioServiceImplTest {
 		REQUEST_USER.setPassword(PASSWORD);
 		REQUEST_USER.setPhones(LISTA_PHONES);
 		
-		
+	
 	}
 	
 	
@@ -142,6 +142,7 @@ public class UsuarioServiceImplTest {
 		Mockito.when(iUserDataAcces.saveUser(USER_DTO)).thenReturn(ID);
 		Mockito.when(iIPhoneDataAccess.saveAll(LISTA_PHONE)).thenReturn(RESPONSE_TRUE);
 		usuarioServiceImpl.saveUser(REQUEST_USER);
+		fail();
 	}
 	
 	@Test(expected = NullPointerException.class)
@@ -175,8 +176,6 @@ public class UsuarioServiceImplTest {
 		usuarioServiceImpl.saveUser(REQUEST_USER);
 		fail();
 	}
-	
-	
 	
 	/**
 	 * 
@@ -283,5 +282,5 @@ public class UsuarioServiceImplTest {
 		usuarioServiceImpl.logOutUser(ID);
 		fail();
 	}
-	
+
 }
