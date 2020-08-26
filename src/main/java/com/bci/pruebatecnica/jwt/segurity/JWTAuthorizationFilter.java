@@ -29,9 +29,13 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 	private final String HEADER = "Authorization";
 	private final String PREFIX = "Bearer ";
-	private final String SECRET = "implementando-seguridad-con-jwt";
 	
+	private String key;
 	
+	public JWTAuthorizationFilter(String key) {
+		this.key = key;
+	}
+
 	/**
 	 *  Metodo que se dispara cada vez que se hace una pettición a la API
 	 *  
@@ -57,6 +61,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 					setUpSpringAuthentication(claims);
 				} else {
 					SecurityContextHolder.clearContext();
+					//response.set
 				}
 			} else {
 					SecurityContextHolder.clearContext();
@@ -67,6 +72,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 			((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
 			return;
 		}
+		
 	}
 	
 	/**
@@ -79,7 +85,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	private Claims validateToken(HttpServletRequest request) {
 		try {
 			String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-			return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();			
+			return Jwts.parser().setSigningKey(key.getBytes()).parseClaimsJws(jwtToken).getBody();			
 		}catch (Exception e) {
 			logger.error("Error de expiracion del token", e.getCause());
 			e.printStackTrace();
@@ -119,4 +125,15 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 			return false;
 		return true;
 	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
+	
+	
 }

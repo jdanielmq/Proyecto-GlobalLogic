@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.bci.pruebatecnica.data.dataAccess.IPhoneDataAccess;
@@ -33,7 +34,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 	@Autowired
 	private IPhoneDataAccess iPhoneDataAccess;
 	
+	private static String key;
 	
+	@Value("${jwt.secret}")
+	public void setKEY_SECRET(String kEY_SECRET) {
+		key = kEY_SECRET;
+	}
+
+
+
 	/**
 	 *  Metodo donde se guarda la información del usuario
 	 *  
@@ -82,7 +91,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
 			
 			/*crear token en base id generado al guardar*/
-			String token = Validador.getJWTToken(String.valueOf(idUser));
+			String token = Validador.getJWTToken(String.valueOf(idUser), key);
 			
 			
 			return new ResponseUser(idUser, 
@@ -118,7 +127,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 					        Fecha.getLocalDateTimeString(userDto.getCreateDate()),
 					        Fecha.getLocalDateTimeString(userDto.getModified()),
 					        Fecha.getLocalDateTimeString(userDto.getLastLogin()),
-					        Validador.getJWTToken(String.valueOf(userDto.getIdUser())),
+					        Validador.getJWTToken(String.valueOf(userDto.getIdUser()),key),
 					        userDto.isActive()
 							);
 

@@ -1,34 +1,30 @@
 package com.bci.pruebatecnica.utils;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 
+public class Validador implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2879458151678540854L;
 
-public class Validador {
-	private static final Logger logger = LoggerFactory.getLogger(Validador.class);
-	
 	public static final String EXP_REG_EMAIL = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.([a-zA-Z]{2,4})+$"; 
 	public static final String EXP_REG_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"; 
 	public static final String EMAIL_NO_VALIDO = "El correo no cumple con el formato de Ejemplo: juan@rodriguez.org"; 
 	public static final String PASSWORD_NO_VALIDA = "La clave no cumple con el formato de Mayùsculas, Minùsculas, Nùmeros y Simbolos";
 	
-	private static final String SECRET = "implementando-seguridad-con-jwt";
-	
-	
-	
+
 	/**
 	 *  Metodo que válida la email con el formato correcto
 	 *  
@@ -63,8 +59,8 @@ public class Validador {
 	 * @param id
 	 */
 	
-	public static String getJWTToken(String id) {
-		String secretKey = SECRET;
+	public static String getJWTToken(String id,String key) {
+		String secretKey = key;
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
 				.commaSeparatedStringToAuthorityList("ROLE_USER");
 		
@@ -83,6 +79,5 @@ public class Validador {
 
 		return "Bearer " + token;
 	}
-	
 
 }
