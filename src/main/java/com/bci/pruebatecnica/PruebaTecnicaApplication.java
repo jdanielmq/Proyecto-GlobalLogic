@@ -4,6 +4,7 @@ package com.bci.pruebatecnica;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,9 +14,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.bci.pruebatecnica.jwt.segurity.JWTAuthorizationFilter;
+import com.bci.pruebatecnica.jwt.segurity.JwtAuthenticationEntryPoint;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -43,6 +46,9 @@ public class PruebaTecnicaApplication {
 	@EnableWebSecurity
 	@Configuration
 	class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+		
+		@Autowired
+		private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
@@ -52,7 +58,13 @@ public class PruebaTecnicaApplication {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.GET,"/h2-console/*").permitAll()
 				.antMatchers(HttpMethod.POST, "/private/user/login").permitAll()
-				.anyRequest().authenticated();
+				.anyRequest()
+				.authenticated()
+				.and()
+				.exceptionHandling()
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				.and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 			
 			}catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException  e ) {
 				logger.error("ERROR - [WebSecurityConfig -> Metodo - configure] ",e.getCause());
@@ -60,6 +72,9 @@ public class PruebaTecnicaApplication {
 				logger.error("ERROR - [WebSecurityConfig -> Metodo - configure] ",e.getCause());
 			}
 		}
+		
+		
+		
 	}
 
 }

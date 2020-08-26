@@ -23,7 +23,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 
-
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	private static final Logger logger = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
 
@@ -51,11 +50,11 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 			if (existeJWTToken(request, response)) {
 				Claims claims = validateToken(request);
 				if(claims == null) {
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error de autorizacion");
-					return;
+			        response.addHeader("WWW-Authenticate", "Basic realm= Not ".concat(HEADER));
+			        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "".concat(String.valueOf(HttpServletResponse.SC_UNAUTHORIZED)));
+			        return;
 				}
-					
 					
 				if (claims.get("authorities") != null) {
 					setUpSpringAuthentication(claims);
